@@ -31,22 +31,13 @@
   var defaultContext = {
     'render_md': render_md,
     'render_ejs': render_ejs,
+    'render_css': render_css,
   };
 
   function render(ejs, ctx) {
     var template = _.template(ejs);
     var context = _.defaults({}, ctx, defaultContext);
     return template({'ctx' : context});
-  }
-
-  function randomId(len) {
-    // http://stackoverflow.com/a/1349426/1433127
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    for (var i=0; i < len; i++) {
-      text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
   }
 
   function render_md(filenameOrStr) {
@@ -78,6 +69,10 @@
     return ph + '';
   }
 
+  function render_css(filename) {
+    return '<link rel="stylesheet" type="text/css" href="' + filename + '">';
+  }
+
   function Placeholder() {
     this.id = randomId(10);
     this.replaced = false;
@@ -99,6 +94,16 @@
     }
     toReplace.remove();
   };
+
+  function randomId(len) {
+    // http://stackoverflow.com/a/1349426/1433127
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for (var i=0; i < len; i++) {
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+  }
 
   function toNodes(html) {
     var div = document.createElement('div');
