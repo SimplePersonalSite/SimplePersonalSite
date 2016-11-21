@@ -12,41 +12,18 @@ function changeUrl() {
       document.body.innerHTML = html;
     })
     .catch(function(err) {
-      console.error(err);
+      document.body.innerHTML = '<h2>Error</h2><p>' + err + '</p>'
     });
 }
 
-function pFetch(url, times) {
-  if (times === undefined) {
-    times = 1;
-  }
-  if (times === 4) {
-    return Promise.reject('tried 3 times and failed to get: ' + url);
-  }
-
-  return new Promise(function(res, rej) {
-    var timeout = {};
+function pFetch(url) {
+  // ajax's promises don't work as expected.
+  return new Promise(function (res, rej) {
     window.ajax().get(url)
-        .then(function(response) {
-          if (timeout.id !== undefined) {
-            clearTimeout(timeout.id);
-            res(response);
-          } else {
-            console.log('resolved after timeout: pFetch(' + url + ', ' + times + ')');
-          }
-        }).catch(function(response, xhr) {
-          if (timeout.id !== undefined) {
-            clearTimeout(timeout.id);
-            rej(new Error(xhr.status));
-          } else {
-            console.log('rejected after timeout: pFetch(' + url + ', ' + times + ')');
-          }
+        .then(res)
+        .catch(function(response, xhr) {
+          rej(new Error(url + ' failed to load with code: ' + xhr.status));
         });
-    timeout.id = setTimeout(function() {
-      delete timeout.id;
-      console.log('timed out getting: ' + url);
-      res(pFetch(url, times + 1));
-    }, 500);
   });
 }
 
@@ -71,12 +48,8 @@ function pLoadDependencies(ejs) {
   var matches = null;
   while (matches = mdRex.exec(ejs)) {
     var filename = matches[1];
-    console.log(filename);
     if (promises[filename] === undefined) {
-      var p = pFetch(filename)
-          .catch(function(err) {
-            throw new Error(filename + ' failed to load with code: ' + err.message);
-          });
+      var p = pFetch(filename);
       promises[filename] = p;
     }
   }
