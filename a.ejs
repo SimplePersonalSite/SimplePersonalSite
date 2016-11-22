@@ -1,5 +1,5 @@
-<%= JSON.stringify(ctx) %>
 <%= ctx.render_css('a.css') %>
-<%= ctx.render_ejs('partials/header.ejs', {'header_args': 'zzz'}) %>
-<h1>A!</h1>
-<div><%= /*ctx.render_md('a.md')*/ 'md' %></div>
+<%= ctx.render_ejs('partials/header.ejs') %>
+<h1>You're on page A!</h1>
+<%= ctx.render_md('a.md') %>
+<%= ctx.render_ejs('debug_info.ejs') %>

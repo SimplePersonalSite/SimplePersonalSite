@@ -37,18 +37,19 @@ function Context(opts) {
    * Guaranteed parameters:
    * url - the url of the page being rendered
    * query - query parameters for the page being rendered in object form
-   * filename - the name of this file being rendered.
+   * filename - the name of this ejs file being rendered.
    *   Can be different than the url filename if, for example, its a partial.
    */
 }
   Context.prototype.render_md = function render_md(filenameOrStr) {
     if (!filenameOrStr.endsWith('.md')) {
-      return marked(filenameOrStr);
+      return marked(Util.render(filenameOrStr, this));
     }
     var ph = new Placeholder();
+    var self = this;
     Util.pFetch(filenameOrStr)
       .then(function(md) {
-        ph.replace(marked(md));
+        ph.replace(marked(Util.render(md, self)));
       })
       .catch(function(err) {
         console.error(err);
@@ -73,6 +74,9 @@ function Context(opts) {
   Context.prototype.render_css = function render_css(filename) {
     return '<link rel="stylesheet" type="text/css" href="' + filename + '">';
   }
+  Context.prototype.render_js = function render_js(filename) {
+    return '<script src="' + filename + '">';
+  }
 
 function App(uberSecretCode) {
   if (uberSecretCode !== App._uberSecretCode) {
@@ -84,6 +88,7 @@ function App(uberSecretCode) {
   App._uberSecretCode = {};
   App._defaultConfig = {
     'hash': '#!',
+    'index': 'index.ejs',
   };
   App.getInstance = function getInstance() {
     if (App._instance === null) {
@@ -106,6 +111,9 @@ function App(uberSecretCode) {
   };
   App.prototype.processUrlChange = function processUrlChange() {
     var url = this.getUrl();
+    if (url == '' || url.endsWith('/')) {
+      url += this.config['index'];
+    }
     Util.pFetch(url)
       .then(function(ejs) {
         var context = new Context({'url': url});
