@@ -4,6 +4,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/fdaciuk-ajax/2.1.2/ajax.min.js" integrity="sha256-2V41ZUHDL2jujCxf7uubLmbm2IbCCmRGRrOI1RLG7Pw=" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.6/marked.min.js" integrity="sha256-mJAzKDq6kSoKqZKnA6UNLtPaIj8zT2mFnWu/GSouhgQ=" crossorigin="anonymous"></script>
   <script src='index.js'></script>
+  <script>
+    var app = App.getInstance();
+    app.run();
+  </script>
 </head>
 <body>
   <p><a href='#!'>#!</a></p>
@@ -11,5 +15,6 @@
   <p><a href='#!a.ejs?a=b'>#!a.ejs?a=b</a></p>
   <p><a href='#!b.ejs?a=b'>#!b.ejs?a=b</a></p>
   <p><a href='#!a.ejs?a=b&c=1'>#!a.ejs?a=b&c=1</a></p>
+  <p><a href='#!a.ejs?a=b&c=1&c=7'>#!a.ejs?a=b&c=1&c=7</a></p>
 </body>
 </html
