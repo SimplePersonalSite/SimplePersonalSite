@@ -30,3 +30,4 @@ Remember, this is just a starting point. Feel free to modify code!
 ## TODO
 - This project needs a title.
 - rename index.js to `title of this application`.js
+- document that you need to use a non-caching http server and give sample python code
