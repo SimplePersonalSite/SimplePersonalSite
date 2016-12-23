@@ -4,13 +4,13 @@ SimplePersonalSite is a small framework written for techies to write personal we
 ### You should use SimplePersonalSite if you &hellip;
 - can benefit from a centralized location for all your notes, tools, reminders, todos, etc
 - are tired of repeating yourself when using stright markdown to write notes
-- find server-side rendering to be unsuitable render your website every time you make a change
+- find server-side rendering to be unsuitable (need access to markdown for special rendering/in-browser editing)
 
 ### You should look elsewhere if you &hellip;
 - have tight latency/bandwidth requirements for your personal site
   - this tool functions best in local networks or running on localhost
-- need another document language other than markdown, and can't make submit a pull to support your language
-  - the code base is pretty small, it should be trivial to add another document markup language such as LaTeX or BBCode.
+- need another document language other than markdown and can't submit a pull to support your language
+  - it should be trivial to add another document markup language such as LaTeX or BBCode.
 
 ## Features
 - dynamic markdown ; variables and logic in markdown using ejs
