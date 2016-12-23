@@ -18,7 +18,7 @@
 
 ## How to use it
 ```sh
-cd project_root # directory containing your ejs and md files
+cd sample_site # directory containing your ejs and md files
 python ../server.py # or any other tool which will serve everything in this directory without caching (eg nginx, apache)
 name_of_your_browser index.html # or open this page in your browser by entering its location in the location bar
 ```
