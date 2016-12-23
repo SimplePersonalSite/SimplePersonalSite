@@ -1,20 +1,21 @@
-# &lt;Title&gt;
+# SimplePersonalSite
+SimplePersonalSite is a small framework written for techies to write personal websites such as journals and wikis. People can write these websites in a mix of `javascript`, `css`, `html`, `ejs`, and `markdown`.
 
-&lt;Title&gt; is a small framework written for developers to write personal websites such as journals and wikis. Developers can write these websites in a mix of javascript, css, html, ejs, and markdown.
+### You should use SimplePersonalSite if you &hellip;
+- can benefit from a centralized location for all your notes, tools, reminders, todos, etc
+- are tired of repeating yourself when using stright markdown to write notes
+- find server-side rendering to be unsuitable render your website every time you make a change
 
-### Why developers use &lt;Title&gt;
-- you can benefit from a centralized location for all your notes, tools, reminders, todos, etc
-- you are tired of repeating yourself when using stright markdown to write notes
-- you don't want to wait to render your website every time you make a change
-
-### Why developers choose other tools
-- you don't host your notes on localhost or otherwise care about the many requests sent for each page
-- you prefer another toolset other than ejs and markdown, and are not willing to spend time reading ~200 lines of code to make your change
+### You should look elsewhere if you &hellip;
+- have tight latency/bandwidth requirements for your personal site
+  - this tool functions best in local networks or running on localhost
+- need another document language other than markdown, and can't make submit a pull to support your language
+  - the code base is pretty small, it should be trivial to add another document markup language such as LaTeX or BBCode.
 
 ## Features
-- dynamic markdown ; variables in markdown
-- instantaneous changes upon refresh ; (client-side rendering)
-- 100% customizable
+- dynamic markdown ; variables and logic in markdown using ejs
+- instantaneous changes upon refresh; (client-side rendering)
+- simple and customizable
 
 ## How to make your own website
 1. create a new directory for your website; `cd` to into it
@@ -38,8 +39,3 @@ name_of_your_browser index.html # or open this page in your browser by entering 
 That's it! The entry point should be clear by reading [index.html](index.html). By default, the index for any page ending in `/` or the `''` page is `index.ejs`. This, and many other settings are configurable in [index.js](index.js).
 
 Remember, this is just a starting point. Feel free to modify code!
-
-## TODO
-- This project needs a title.
-- rename index.js to `title of this application`.js
-- document that you need to use a non-caching http server and give sample python code
