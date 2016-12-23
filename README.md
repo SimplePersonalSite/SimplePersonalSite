@@ -16,7 +16,7 @@
 - instantaneous changes upon refresh ; (client-side rendering)
 - 100% customizable
 
-## How to use it
+## Example
 ```sh
 cd sample_site # directory containing your ejs and md files
 python ../server.py # or any other tool which will serve everything in this directory without caching (eg nginx, apache)
@@ -24,6 +24,8 @@ name_of_your_browser index.html # or open this page in your browser by entering 
 ```
 
 That's it! The entry point should be clear by reading [index.html](index.html). By default, the index for any page ending in `/` or the `''` page is `index.ejs`. This, and many other settings are configurable in [index.js](index.js).
+
+## How to use it
 
 Remember, this is just a starting point. Feel free to modify code!
 
