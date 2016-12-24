@@ -19,7 +19,7 @@ SimplePersonalSite is a small framework written for techies to write personal we
 
 ## How to make your own website
 1. create a new directory for your website; `cd` to into it
-1. copy or symlink "index.html" and "index.js" from this project
+1. copy or symlink "index.html" and "SimplePersonalSite.js" from this project
 1. create `index.ejs` with `<body>Hello, world!</body>`
 1. run `python path/to/this/project/server.py`
   - it may help to symlink or copy this file to your project for easy access
