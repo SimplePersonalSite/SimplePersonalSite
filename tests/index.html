@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Test SimplePersonalSite</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.css" integrity="sha256-XxZgFmkmXZlR6jVPH+k+HULjy6Lc2IadEc+Ph/KINXk=" crossorigin="anonymous" />
+  <style>
+     #fixture {
+      position: absolute;
+      top: -9999;
+      left: -9999;
+     };
+  </style>  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.js" integrity="sha256-oKs2H6mxa+z0WltXqQhm33TarvQpRyBpmWoDgcBVGB0=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.js" integrity="sha256-y83gKLm8mCH4eczIigvCSd1fClOqtYfeGvmsiOFYjMk=" crossorigin="anonymous"></script>
+  <script>mocha.setup('bdd');</script>
+  <script src='SimplePersonalSite.js'></script>
+  <script src='test.js'></script>
+  <script>
+    window.onload = function() {
+      mocha.run()
+    };
+  </script>
+ </head>
+<body>
+  <div id="mocha"></div>
+</body>
+</html>

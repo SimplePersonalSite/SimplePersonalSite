@@ -33,9 +33,16 @@ SimplePersonalSite is a small framework written for techies to write personal we
 ```sh
 cd sample_site # directory containing your ejs and md files
 python ../server.py # or any other tool which will serve everything in this directory without caching (eg nginx, apache)
-name_of_your_browser index.html # or open this page in your browser by entering its location in the location bar
+name_of_your_browser index.html # open this page in your browser
 ```
 
 That's it! The entry point should be clear by reading [index.html](index.html). By default, the index for any page ending in `/` or the `''` page is `index.ejs`. This, and many other settings are configurable in [index.js](index.js).
 
 Remember, this is just a starting point. Feel free to modify code!
+
+## Run Tests
+```sh
+cd tests
+python ../server.py
+name_of_your_browser index.html # open this page in your browser
+```
