@@ -11,9 +11,12 @@ Util.isPromise = function isPromise(p) {
   return p !== undefined && p !== null && typeof p.then == 'function';
 };
 Util.pFetch = function pFetch(url) {
+  return Util.pAjax(url, 'get');
+};
+Util.pAjax = function pFetch(url, method, data) {
   // ajax's promises don't work as expected.
   return new Promise(function (res, rej) {
-    window.ajax().get(url)
+    (data === undefined ? window.ajax()[method](url) : window.ajax()[method](url, data))
         .then(res)
         .catch(function(response, xhr) {
           rej(new Error(url + ' failed to load with code: ' + xhr.status));
@@ -79,6 +82,50 @@ Util.createSingleton = function createSingleton(name, constructor) {
   };
   Object.defineProperty(S, 'name', {value: name});
   return S;
+};
+Util.linkCss = function linkCss(href) {
+  var link = Util.toNodes('<link rel="stylesheet" type="text/css" href="' + href + '">')[0];
+  document.head.appendChild(link);
+};
+Util.pLinkJs = function pLinkJs(src) {
+  return new Promise(function(res, rej) {
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = src;
+    script.onload = res;
+    script.onerror = rej;
+    document.head.appendChild(script);
+  });
+};
+Util.ResolvablePromise = function ResolvablePromise() {
+  var _res = null;
+  var _rej = null;
+
+  var p = new Promise(function(res, rej) {
+    _res = res;
+    _rej = rej;
+  });
+  p.resolve = function resolve() {
+    var args = arguments;
+    Promise.resolve().then(function() {
+      assertDefined();
+      _res.apply(this, args);
+    }).catch(console.error.bind(console));
+  };
+  p.reject = function reject() {
+    var args = arguments;
+    Promise.resolve().then(function() {
+      assertDefined();
+      _rej.apply(this, args);
+    }).catch(console.error.bind(console));
+  };
+  return p;
+
+  function assertDefined() {
+    if (_res === null || _rej === null) {
+      throw new Error('Util.ResolvablePromise: expected _res and _rej to be defined by now.');
+    }
+  }
 };
 
 
@@ -155,6 +202,9 @@ App.prototype.processUrlChange = function processUrlChange() {
       document.body.innerHTML = '<h2>Error</h2><p>' + err + '</p>'
     });
 };
+App.prototype.refresh = function refresh() {
+  this.processUrlChange();
+};
 
 
 
@@ -213,12 +263,16 @@ function Context(opts) {
    */
 }
 Context.prototype.render_md = function render_md(filenameOrStr) {
-  if (!filenameOrStr.endsWith('.md')) {
-    return marked(Util.render_ejs(filenameOrStr, this));
-  }
+  return filenameOrStr.endsWith('.md') ?
+      this.render_md_file(filenameOrStr) : this.render_md_str(filenameOrStr);
+};
+Context.prototype.render_md_str = function render_md_str(str) {
+  return marked(Util.render_ejs(str, this));
+};
+Context.prototype.render_md_file = function render_md_file(filename) {
   var ph = new Placeholder();
   var self = this;
-  Util.pFetch(filenameOrStr)
+  Util.pFetch(filename)
     .then(function(md) {
       ph.replace(marked(Util.render_ejs(md, self)));
     })
