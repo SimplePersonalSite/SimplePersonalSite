@@ -32,37 +32,6 @@ Util.toNodes = function toNodes(html) {
   div.innerHTML = html;
   return div.childNodes;
 };
-Util.parseUrl = function parseUrl(url) {
-  var qIdx = url.indexOf('?');
-  if (qIdx === -1) {
-    return {
-      filename: url,
-      query: {},
-    };
-  } else {
-    return {
-      filename: url.substr(0, qIdx),
-      query: _.chain([url.substr(qIdx+1, url.length)])
-          .map(function(str) { return str.split('&'); })
-          .flatten()
-          .reduce(function(memo, keyVal) {
-            var keyVal = keyVal.split('=');
-            var key = decodeURIComponent(keyVal[0]);
-            var val = decodeURIComponent(keyVal[1] === undefined ? true : keyVal[1]);
-            if (memo[key] !== undefined) {
-              if (!Array.isArray(memo[key])) {
-                memo[key] = [memo[key]]
-              }
-              memo[key].push(val);
-            } else {
-              memo[key] = val;
-            }
-            return memo;
-          }, {})
-          .value(),
-    }
-  }
-};
 Util.createSingleton = function createSingleton(name, constructor) {
   var S = function(uberSecretCode) {
     if (uberSecretCode !== S._uberSecretCode) {
@@ -127,6 +96,49 @@ Util.ResolvablePromise = function ResolvablePromise() {
     }
   }
 };
+Util.getUrl = function getUrl() {
+  var hash = window.location.hash;
+  return hash.substring(App.getInstance().config['hash'].length);
+};
+Util.getPathname = function getPathname() {
+  var url = Util.getUrl();
+  var searchIdx = url.indexOf('?');
+  if (searchIdx == -1) {
+    searchIdx = url.length;
+  }
+  return url.substring(0, searchIdx);
+};
+Util.getSearch = function getSearch() {
+  var url = Util.getUrl();
+  var searchIdx = url.indexOf('?');
+  if (searchIdx == -1) {
+    return '';
+  }
+  return url.substring(searchIdx + 1);
+};
+Util.parseQuery = function parseQuery(search) {
+  if (search == '') {
+    return {};
+  }
+  return _.chain([search])
+      .map(function(str) { return str.split('&'); })
+      .flatten()
+      .reduce(function(memo, keyVal) {
+        var keyVal = keyVal.split('=');
+        var key = decodeURIComponent(keyVal[0]);
+        var val = decodeURIComponent(keyVal[1] === undefined ? true : keyVal[1]);
+        if (memo[key] !== undefined) {
+          if (!Array.isArray(memo[key])) {
+            memo[key] = [memo[key]]
+          }
+          memo[key].push(val);
+        } else {
+          memo[key] = val;
+        }
+        return memo;
+      }, {})
+      .value();
+};
 
 
 
@@ -181,17 +193,15 @@ App.prototype.run = function run(plugins) {
     }
   }).catch(console.error.bind(console));
 };
-App.prototype.getUrl = function getUrl() {
-  return window.location.hash.substring(this.config['hash'].length);
-};
 App.prototype.processUrlChange = function processUrlChange() {
-  var url = this.getUrl();
+  var url = Util.getPathname();
+  var query = Util.parseQuery(Util.getSearch());
   if (url == '' || url.endsWith('/')) {
     url += this.config['index'];
   }
   Util.pFetch(url)
     .then(function(ejs) {
-      var context = new Context({'url': url});
+      var context = new Context({'url': url, 'query': query, 'filename': url});
       return Util.render_ejs(ejs, context);
     })
     .then(function(html) {
@@ -250,18 +260,20 @@ Placeholder.prototype.replace = function replace(html) {
  * functions and variables on the context for use when rendering.
  */
 function Context(opts) {
-  if (opts.url === undefined) {
-    throw new Error('url must be defined');
+  if (opts.url === undefined || opts.query === undefined || opts.filename === undefined) {
+    throw new Error('url, query, and filename must be defined');
   }
-  _.defaults(this, opts, Util.parseUrl(opts.url));
+  _.defaults(this, opts);
   /**
    * Guaranteed parameters available to every rendered file:
    * url - the url of the page being rendered
    * query - query parameters for the page being rendered in object form
-   * filename - the name of this ejs file being rendered.
-   *   Can be different than the url filename if, for example, its a partial.
+   * filename - the name of this file/template being rendered. May be a markup file.
    */
 }
+Context.prototype.create = function create(opts) {
+  return new Context(_.defaults({}, this, opts));
+};
 Context.prototype.render_md = function render_md(filenameOrStr) {
   return filenameOrStr.endsWith('.md') ?
       this.render_md_file(filenameOrStr) : this.render_md_str(filenameOrStr);
@@ -274,7 +286,8 @@ Context.prototype.render_md_file = function render_md_file(filename) {
   var self = this;
   Util.pFetch(filename)
     .then(function(md) {
-      ph.replace(marked(Util.render_ejs(md, self)));
+      var ctx = self.create({'filename': filename});
+      ph.replace(marked(Util.render_ejs(md, ctx)));
     })
     .catch(function(err) {
       console.error(err);
@@ -287,7 +300,7 @@ Context.prototype.render_ejs = function render_ejs(filename, ctx) {
   var self = this;
   Util.pFetch(filename)
     .then(function(ejs) {
-      var context = new Context(_.defaults({}, ctx, {'filename': filename}, self));
+      var context = self.create({'filename': filename});
       ph.replace(Util.render_ejs(ejs, context));
     })
     .catch(function(err) {
