@@ -139,6 +139,12 @@ Util.parseQuery = function parseQuery(search) {
       }, {})
       .value();
 };
+Util.assert = function assert(cond, msg) {
+  if (!cond) {
+    msg = msg || 'Assertion failed';
+    throw new Error(msg);
+  }
+};
 
 
 
