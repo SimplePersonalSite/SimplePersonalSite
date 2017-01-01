@@ -46,3 +46,7 @@ cd tests
 python ../server.py
 name_of_your_browser index.html # open this page in your browser
 ```
+
+## Advanced
+### Query parameters
+This application makes query parameters provided **after the hash** available to all ejs scripts. They are available in `ctx.query`. So if you put `file:///path/to/your/index.html?p1=a#!index.ejs?p2=b&a=1&a=2` in your address bar, `ctx.query = {p2: 'b', 'a' = [1, 2]}`. Note: `p1` is part of the *real* query parametes, but not part of this application's query parameters. I'm open to moving the query parameters up before the hash. This is probably the better solution because two sets of query parameters is weird. It's also weird to put query parameters that only affect the javascript into the page query parameters. Maybe a better solution is to put json in the hash?
