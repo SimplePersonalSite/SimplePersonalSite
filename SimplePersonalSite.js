@@ -96,25 +96,19 @@ Util.ResolvablePromise = function ResolvablePromise() {
     }
   }
 };
-Util.getUrl = function getUrl() {
-  var hash = window.location.hash;
-  return hash.substring(App.getInstance().config['hash'].length);
-};
 Util.getPathname = function getPathname() {
-  var url = Util.getUrl();
-  var searchIdx = url.indexOf('?');
-  if (searchIdx == -1) {
-    searchIdx = url.length;
-  }
-  return url.substring(0, searchIdx);
+  return Util.getQuery()[App.getInstance().config['pageQueryParam']] || '';
 };
 Util.getSearch = function getSearch() {
-  var url = Util.getUrl();
-  var searchIdx = url.indexOf('?');
-  if (searchIdx == -1) {
+  var search = window.location.search;
+  var idx = search.indexOf('?');
+  if (idx == -1) {
     return '';
   }
-  return url.substring(searchIdx + 1);
+  return search.substring(idx + 1);
+};
+Util.getQuery = function getQuery() {
+  return Util.parseQuery(Util.getSearch());
 };
 Util.parseQuery = function parseQuery(search) {
   if (search == '') {
@@ -153,12 +147,11 @@ Util.assert = function assert(cond, msg) {
  */
 var App = Util.createSingleton('App', function() {
   this.setConfig();
-  this._running = false;
   this._inited = false;
 });
 App._defaultConfig = {
-  'hash': '#!',
   'index': 'index.ejs',
+  'pageQueryParam': 'page',
 };
 App.prototype.setConfig = function setConfig(config) {
   this.config = _.defaults({}, config, App._defaultConfig);
@@ -186,22 +179,12 @@ App.prototype.run = function run(plugins) {
   var self = this;
 
   this.pInit(plugins).then(function() {
-    if (self._running !== false) {
-      throw new Error('App is already running');
-    }
-    self._running = true;
-
-    window.onhashchange = self.processUrlChange.bind(self);
-    if (window.location.hash === '') {
-      window.location.hash = self.config['hash'];
-    } else {
-      self.processUrlChange();
-    }
+    self.load();
   }).catch(console.error.bind(console));
 };
-App.prototype.processUrlChange = function processUrlChange() {
+App.prototype.load = function load() {
+  var query = Util.getQuery();
   var url = Util.getPathname();
-  var query = Util.parseQuery(Util.getSearch());
   if (url == '' || url.endsWith('/')) {
     url += this.config['index'];
   }
@@ -219,7 +202,7 @@ App.prototype.processUrlChange = function processUrlChange() {
     });
 };
 App.prototype.refresh = function refresh() {
-  this.processUrlChange();
+  this.load();
 };
 
 
@@ -314,13 +297,13 @@ Context.prototype.render_ejs = function render_ejs(filename, ctx) {
       ph.replace('<p>' + err + '</p>');
     });
   return ph + '';
-}
+};
 Context.prototype.render_css = function render_css(filename) {
   return '<link rel="stylesheet" type="text/css" href="' + filename + '">';
-}
+};
 Context.prototype.render_js = function render_js(filename) {
   return '<script src="' + filename + '">';
-}
+};
 
 
 
