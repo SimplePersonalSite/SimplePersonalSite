@@ -207,6 +207,27 @@ Util.assert = function assert(cond, msg) {
   }
 };
 
+/**
+ * Escape html special chars.
+ * https://stackoverflow.com/a/12034334
+ */
+Util.escapeHtml = function escapeHtml(string) {
+  return String(string).replace(/[&<>"'`=\/]/g, Util.escapeHtmlChar);
+}
+Util.escapeHtmlChar = function escapeHtmlChar(c) {
+  return Util._entityMap[c];
+};
+Util._entityMap = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;',
+  '`': '&#x60;',
+  '=': '&#x3D;',
+};
+
 
 
 /**
