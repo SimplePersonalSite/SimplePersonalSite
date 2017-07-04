@@ -305,7 +305,7 @@ App.prototype.load = function load() {
   if (url == '' || url.endsWith('/')) {
     url += this.config['index'];
   }
-  Util.pFetch(url)
+  return Util.pFetch(url)
     .then(function(ejs) {
       var context = new Context({'url': url, 'query': query, 'filename': url});
       return Util.render_ejs(ejs, context);
@@ -323,7 +323,7 @@ App.prototype.load = function load() {
  * Synonym to App.load()
  */
 App.prototype.refresh = function refresh() {
-  this.load();
+  return this.load();
 };
 
 
