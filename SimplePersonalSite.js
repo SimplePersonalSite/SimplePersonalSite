@@ -56,7 +56,7 @@ Util.render_ejs = function render_ejs(ejs, context) {
 Util.toNodes = function toNodes(html) {
   var div = document.createElement('div');
   div.innerHTML = html;
-  return div.childNodes;
+  return Array.prototype.slice.call(div.children);
 };
 
 /**
@@ -228,6 +228,15 @@ Util._entityMap = {
   '=': '&#x3D;',
 };
 
+/**
+ * Unescape the html.
+ * https://stackoverflow.com/a/34064434
+ */
+Util.unescapeHtml = function unescapeHtml(html) {
+  var doc = new DOMParser().parseFromString(html, "text/html");
+  return doc.documentElement.textContent;
+};
+
 
 
 /**
@@ -257,14 +266,17 @@ App.prototype.setConfig = function setConfig(config) {
  * plugins - a list of functions which will be called in order. The plugins may return a promise if
  * they do asychronous work. If a plugin returns a promise, the app will wait until it resolves
  * before calling the next plugin.
+ *
+ * The plugins are passed this instance of this App.
  */
 App.prototype.pInit = function pInit(plugins) {
   if (this._inited !== false) {
     return Promise.resolve();
   }
   this._inited = true;
+  var self = this;
   return plugins.reduce(function(memoP, plugin) {
-    var res = plugin();
+    var res = plugin(this);
     if (Util.isPromise(res)) {
       memoP = memoP.then(res);
     }
@@ -435,7 +447,8 @@ Context.prototype.render_md_file = function render_md_file(filename) {
   Util.pFetch(filename)
     .then(function(md) {
       var ctx = self.create({'filename': filename});
-      ph.replace(marked(Util.render_ejs(md, ctx)));
+      var html = ctx.render_md_str(md);
+      ph.replace(html);
     })
     .catch(function(err) {
       console.error(err);
