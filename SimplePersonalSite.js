@@ -276,7 +276,7 @@ App.prototype.pInit = function pInit(plugins) {
   this._inited = true;
   var self = this;
   return plugins.reduce(function(memoP, plugin) {
-    var res = plugin(this);
+    var res = plugin(self);
     if (Util.isPromise(res)) {
       memoP = memoP.then(res);
     }
